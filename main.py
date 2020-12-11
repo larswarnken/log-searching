@@ -34,9 +34,17 @@ def get_dir():
 
 # get all log folders within log dir
 def get_folders():
-    folders = []
-    os.walk(get_dir())
-    print(folders)
+    folders = os.listdir(path=log_dir)
+    channels = os.listdir(path=str(log_dir + "\\Channels"))
+
+    channels.sort()
+
+    if "Mentions" in folders:
+        channels.insert(0, 'mentions')
+
+    return channels
+
+
 
 ##################################################################################################################
 
@@ -44,7 +52,7 @@ def get_folders():
 # checking if dir json file exists, else creating default file
 if not os.path.isfile("directory.json"):
     with open('directory.json', 'w') as f:
-        json.dump(str(os.getenv('APPDATA') + "\\Chattterino2\\Logs\\Twitch"), f)
+        json.dump(str(os.getenv('APPDATA') + "\\Chatterino2\\Logs\\Twitch"), f)
 
 
 # setting log dir
@@ -83,11 +91,13 @@ label_channel = tk.Label(root, text="Channel: ", bg="#424242", fg="white")
 # buttons
 button_dir = tk.Button(root, text="change directory", command=lambda: set_dir())
 button_get_dir = tk.Button(root, text="get directory", command=lambda: get_dir())
+button_get_folders = tk.Button(root, text="get folders", command=lambda: print(get_folders()))
 
 # grid
 label_channel.grid(row=0, column=0)
 channel_chosen.grid(row=0, column=1)
 button_dir.grid(row=0, column=10)
 button_get_dir.grid(row=0, column=11)
+button_get_folders.grid(row=0, column=12)
 
 root.mainloop()
