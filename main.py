@@ -45,7 +45,6 @@ def get_folders():
     return channels
 
 
-
 ##################################################################################################################
 
 
@@ -72,18 +71,7 @@ channel = tk.StringVar()
 channel_chosen = ttk.Combobox(root, width=25, textvariable=channel)
 
 # Adding combobox drop down list
-channel_chosen['values'] = (' January',
-                            ' February',
-                            ' March',
-                            ' April',
-                            ' May',
-                            ' June',
-                            ' July',
-                            ' August',
-                            ' September',
-                            ' October',
-                            ' November',
-                            ' December')
+channel_chosen['values'] = get_folders()
 
 # labels
 label_channel = tk.Label(root, text="Channel: ", bg="#424242", fg="white")
