@@ -7,6 +7,7 @@ import os.path
 from tkinter import ttk
 import json
 import tkinter.scrolledtext as tkst
+import re
 
 
 # set directory of logs trough explorer
@@ -53,6 +54,24 @@ def get_search_key():
         print(search_entry.get())
 
 
+# when an option from dropdown is clicked
+def dropdown_selected(event):
+    dropdown_text = channel_chosen.get()
+    if dropdown_text in found_channels:
+        if channel_chosen.get() != 'mentions':
+            count = len(os.listdir(path=str(f'{log_dir}\\Channels\\{dropdown_text}')))
+            first_date_name = sorted(os.listdir(path=str(f'{log_dir}\\Channels\\{dropdown_text}')))[0]
+        else:
+            count = len(os.listdir(path=str(f'{log_dir}\\{dropdown_text}')))
+            first_date_name = sorted(os.listdir(path=str(f'{log_dir}\\{dropdown_text}')))[0]
+
+        matches = re.findall(r'(?:\d+)', first_date_name)
+
+        label_logs_found['text'] = f'{count} logs found since {matches[-1]}-{matches[-2]}-{matches[-3]}'
+    else:
+        label_logs_found['text'] = 'no logs found'
+
+
 ##################################################################################################################
 
 
@@ -64,6 +83,9 @@ if not os.path.isfile("directory.json"):
 
 # setting log dir
 log_dir = get_dir()
+
+# all found channels
+found_channels = get_folders()
 
 
 # set up window
@@ -94,12 +116,13 @@ combostyle.theme_use('combostyle')
 # dropdown menu
 channel = tk.StringVar()
 channel_chosen = ttk.Combobox(root, width=15, textvariable=channel)
-channel_chosen['values'] = get_folders()
+channel_chosen['values'] = found_channels
+channel_chosen.bind("<<ComboboxSelected>>", dropdown_selected)
 
 # labels
 label_channel = tk.Label(root, text="Channel: ", bg="#424242", fg="white")
 label_search = tk.Label(root, text="Search: ", bg="#424242", fg="white")
-label_logs_found = tk.Label(root, text="xx.xxx logs found since xx-xx-xxxx", bg="#424242", fg="white")
+label_logs_found = tk.Label(root, text="", bg="#424242", fg="white")
 label_macthes_found = tk.Label(root, text="xxx.xxx matches", bg="#424242", fg="white")
 label_placeholder1 = tk.Label(root, text="", bg="#424242")
 label_placeholder2 = tk.Label(root, text="", bg="#424242")
@@ -140,6 +163,7 @@ root.grid_rowconfigure(2, weight=1)
 
 
 # for return key
-search_entry.bind("<Return>", (lambda event: get_search_key()))
+channel_chosen.bind("<Return>", lambda event: dropdown_selected(None))
+search_entry.bind("<Return>", lambda event: get_search_key())
 
 root.mainloop()
