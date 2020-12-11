@@ -4,10 +4,12 @@ from tkinter import filedialog
 from tkinter import messagebox
 import os
 import os.path
+from pathlib import Path
 from tkinter import ttk
 import json
 import tkinter.scrolledtext as tkst
 import re
+import glob
 
 
 # set directory of logs trough explorer
@@ -51,7 +53,7 @@ def get_folders():
 # get search key
 def get_search_key():
     if search_entry.get() != "":
-        print(search_entry.get())
+        return search_entry.get()
 
 
 # when an option from dropdown is clicked
@@ -70,6 +72,26 @@ def dropdown_selected(event):
         label_logs_found['text'] = f'{count} logs found since {matches[-1]}-{matches[-2]}-{matches[-3]}'
     else:
         label_logs_found['text'] = 'no logs found'
+
+
+# shows every chatline with search key in it
+def general_search(key):
+    editArea.delete('1.0', END)
+    message_counter = 0
+    results = []
+    if key != "":
+        for file in os.listdir(path=str(f'{log_dir}\\Channels\\{channel_chosen.get()}')):
+            file_path = f'{log_dir}\\Channels\\{channel_chosen.get()}\\{file}'
+            with open(file_path, 'r', encoding="utf8", errors='ignore') as log:
+                all_messages_from_log = log.read().split("\n")
+            for line in all_messages_from_log:
+                if key in line:
+                    message_counter += 1
+                    results.insert(0, line)
+    label_macthes_found['text'] = f'{format(message_counter, ",d")} matches'
+    result_string = '\n'.join(results)
+    editArea.insert(INSERT, str(result_string))
+
 
 
 ##################################################################################################################
@@ -129,7 +151,7 @@ label_placeholder2 = tk.Label(root, text="", bg="#424242")
 
 # buttons
 button_dir = tk.Button(root, text="change directory", command=lambda: set_dir(), fg="white", bg="#424242")
-button_search = tk.Button(root, text="search", width=8, command=lambda: get_search_key(), fg="white", bg="#424242")
+button_search = tk.Button(root, text="search", width=8, command=lambda: general_search(str(get_search_key())), fg="white", bg="#424242")
 button_messages = tk.Button(root, text="messages", width=8, command=lambda: get_search_key(), fg="white", bg="#424242")
 button_mentions = tk.Button(root, text="mentions", width=8, command=lambda: get_search_key(), fg="white", bg="#424242")
 
@@ -164,6 +186,12 @@ root.grid_rowconfigure(2, weight=1)
 
 # for return key
 channel_chosen.bind("<Return>", lambda event: dropdown_selected(None))
-search_entry.bind("<Return>", lambda event: get_search_key())
+search_entry.bind("<Return>", lambda event: general_search(str(get_search_key())))
 
 root.mainloop()
+
+
+# TODO: save last channel
+
+
+
