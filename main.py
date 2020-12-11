@@ -67,11 +67,15 @@ def dropdown_selected(event):
             count = len(os.listdir(path=str(f'{log_dir}\\{dropdown_text}')))
             first_date_name = sorted(os.listdir(path=str(f'{log_dir}\\{dropdown_text}')))[0]
 
-        matches = re.findall(r'(?:\d+)', first_date_name)
-
-        label_logs_found['text'] = f'{count} logs found since {matches[-1]}-{matches[-2]}-{matches[-3]}'
+        label_logs_found['text'] = f'{count} logs found since {log_name_to_date(first_date_name)}'
     else:
         label_logs_found['text'] = 'no logs found'
+
+
+# extracts date out of log file name
+def log_name_to_date(long_name):
+    matches = re.findall(r'(?:\d+)', long_name)
+    return f'{matches[-1]}-{matches[-2]}-{matches[-3]}'
 
 
 # shows every chatline with search key in it
@@ -87,9 +91,6 @@ def messages_search(key):
 
 
 def mentions_search(key):
-    editArea.delete('1.0', END)
-    message_counter = 0
-    results = []
     if key != "":
         editArea.delete('1.0', END)
         message_counter = 0
@@ -101,7 +102,7 @@ def mentions_search(key):
             for line in all_messages_from_log:
                 if key in line and str(f'{key}: ') not in line:
                     message_counter += 1
-                    results.append(line)
+                    results.append(f'{log_name_to_date(file)} {line}')
         results.reverse()
         label_macthes_found['text'] = f'{format(message_counter, ",d")} matches'
         if message_counter == 0:
@@ -124,7 +125,7 @@ def file_search(key):
         for line in all_messages_from_log:
             if key in line:
                 message_counter += 1
-                results.append(line)
+                results.append(f'{log_name_to_date(file)} {line}')
     results.reverse()
     label_macthes_found['text'] = f'{format(message_counter, ",d")} matches'
     if message_counter == 0:
