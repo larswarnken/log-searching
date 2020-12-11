@@ -76,21 +76,63 @@ def dropdown_selected(event):
 
 # shows every chatline with search key in it
 def general_search(key):
+    if key != "":
+        file_search(key)
+
+
+def messages_search(key):
+    if key != "":
+        modified_key = f']  {key}:'
+        file_search(modified_key)
+
+
+def mentions_search(key):
     editArea.delete('1.0', END)
     message_counter = 0
     results = []
     if key != "":
+        editArea.delete('1.0', END)
+        message_counter = 0
+        results = []
         for file in os.listdir(path=str(f'{log_dir}\\Channels\\{channel_chosen.get()}')):
             file_path = f'{log_dir}\\Channels\\{channel_chosen.get()}\\{file}'
             with open(file_path, 'r', encoding="utf8", errors='ignore') as log:
                 all_messages_from_log = log.read().split("\n")
             for line in all_messages_from_log:
-                if key in line:
+                if key in line and str(f'{key}: ') not in line:
                     message_counter += 1
-                    results.insert(0, line)
+                    results.append(line)
+        results.reverse()
+        label_macthes_found['text'] = f'{format(message_counter, ",d")} matches'
+        if message_counter == 0:
+            result_string = 'no matches lol'
+            editArea.insert(INSERT, str(result_string))
+        else:
+            result_string = '\n'.join(results)
+            editArea.insert(INSERT, str(result_string))
+
+
+# searches in all files for key
+def file_search(key):
+    editArea.delete('1.0', END)
+    message_counter = 0
+    results = []
+    for file in os.listdir(path=str(f'{log_dir}\\Channels\\{channel_chosen.get()}')):
+        file_path = f'{log_dir}\\Channels\\{channel_chosen.get()}\\{file}'
+        with open(file_path, 'r', encoding="utf8", errors='ignore') as log:
+            all_messages_from_log = log.read().split("\n")
+        for line in all_messages_from_log:
+            if key in line:
+                message_counter += 1
+                results.append(line)
+    results.reverse()
     label_macthes_found['text'] = f'{format(message_counter, ",d")} matches'
-    result_string = '\n'.join(results)
-    editArea.insert(INSERT, str(result_string))
+    if message_counter == 0:
+        result_string = 'no matches lol'
+        editArea.insert(INSERT, str(result_string))
+    else:
+        result_string = '\n'.join(results)
+        editArea.insert(INSERT, str(result_string))
 
 
 
@@ -145,15 +187,15 @@ channel_chosen.bind("<<ComboboxSelected>>", dropdown_selected)
 label_channel = tk.Label(root, text="Channel: ", bg="#424242", fg="white")
 label_search = tk.Label(root, text="Search: ", bg="#424242", fg="white")
 label_logs_found = tk.Label(root, text="", bg="#424242", fg="white")
-label_macthes_found = tk.Label(root, text="xxx.xxx matches", bg="#424242", fg="white")
+label_macthes_found = tk.Label(root, text="", bg="#424242", fg="white")
 label_placeholder1 = tk.Label(root, text="", bg="#424242")
 label_placeholder2 = tk.Label(root, text="", bg="#424242")
 
 # buttons
 button_dir = tk.Button(root, text="change directory", command=lambda: set_dir(), fg="white", bg="#424242")
 button_search = tk.Button(root, text="search", width=8, command=lambda: general_search(str(get_search_key())), fg="white", bg="#424242")
-button_messages = tk.Button(root, text="messages", width=8, command=lambda: get_search_key(), fg="white", bg="#424242")
-button_mentions = tk.Button(root, text="mentions", width=8, command=lambda: get_search_key(), fg="white", bg="#424242")
+button_messages = tk.Button(root, text="messages", width=8, command=lambda: messages_search(str(get_search_key())), fg="white", bg="#424242")
+button_mentions = tk.Button(root, text="mentions", width=8, command=lambda: mentions_search(str(get_search_key())), fg="white", bg="#424242")
 
 # text entries
 search_entry = tk.Entry(root, width=17, bg="#424242", fg="white")
