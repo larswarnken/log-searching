@@ -45,6 +45,11 @@ def get_folders():
     return channels
 
 
+def get_search_key():
+    if search_entry.get() != "":
+        print(search_entry.get())
+
+
 ##################################################################################################################
 
 
@@ -67,25 +72,37 @@ root.configure(bg="#424242")
 ##################################################################################################################
 
 
+# dropdown menu
 channel = tk.StringVar()
-channel_chosen = ttk.Combobox(root, width=25, textvariable=channel)
-
-# Adding combobox drop down list
+channel_chosen = ttk.Combobox(root, width=15, textvariable=channel)
 channel_chosen['values'] = get_folders()
 
 # labels
 label_channel = tk.Label(root, text="Channel: ", bg="#424242", fg="white")
+label_search = tk.Label(root, text="Search: ", bg="#424242", fg="white")
 
 # buttons
 button_dir = tk.Button(root, text="change directory", command=lambda: set_dir())
 button_get_dir = tk.Button(root, text="get directory", command=lambda: get_dir())
 button_get_folders = tk.Button(root, text="get folders", command=lambda: print(get_folders()))
+button_search = tk.Button(root, text="search", command=lambda:get_search_key())
+
+# text entries
+search_entry = tk.Entry(root, width=18)
 
 # grid
-label_channel.grid(row=0, column=0)
-channel_chosen.grid(row=0, column=1)
-button_dir.grid(row=0, column=10)
-button_get_dir.grid(row=0, column=11)
-button_get_folders.grid(row=0, column=12)
+label_channel.grid(row=0, column=10)
+channel_chosen.grid(row=0, column=20)
+button_dir.grid(row=0, column=30)
+button_get_dir.grid(row=0, column=40)
+button_get_folders.grid(row=0, column=50)
+
+label_search.grid(row=10, column=10)
+search_entry.grid(row=10, column=20)
+button_search.grid(row=10, column=30)
+
+
+# for return key
+# search_entry.bind("<Return>", (lambda event: general_search(search_entry.get())))
 
 root.mainloop()
