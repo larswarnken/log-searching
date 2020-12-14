@@ -42,9 +42,6 @@ def get_folders():
 
     channels.sort()
 
-    if "Mentions" in folders:
-        channels.insert(0, 'mentions')
-
     return channels
 
 
@@ -58,12 +55,8 @@ def get_search_key():
 def dropdown_selected(event):
     dropdown_text = channel_chosen.get()
     if dropdown_text in found_channels:
-        if channel_chosen.get() != 'mentions':
-            count = len(os.listdir(path=str(f'{log_dir}\\Channels\\{dropdown_text}')))
-            first_date_name = sorted(os.listdir(path=str(f'{log_dir}\\Channels\\{dropdown_text}')))[0]
-        else:
-            count = len(os.listdir(path=str(f'{log_dir}\\{dropdown_text}')))
-            first_date_name = sorted(os.listdir(path=str(f'{log_dir}\\{dropdown_text}')))[0]
+        count = len(os.listdir(path=str(f'{log_dir}\\Channels\\{dropdown_text}')))
+        first_date_name = sorted(os.listdir(path=str(f'{log_dir}\\Channels\\{dropdown_text}')))[0]
 
         label_logs_found['text'] = f'{count} logs found since {log_name_to_date(first_date_name)}'
     else:
